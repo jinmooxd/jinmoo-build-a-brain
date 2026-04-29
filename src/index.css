@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-serif: 'Fraunces', serif;
+  --font-sans: 'Inter', sans-serif;
+  --color-ink: #0a0e1a;
+  --color-slate: #141929;
+  --color-amber: #ffb347;
+  --color-passive: #5a6b8c;
+  --color-forgotten: #3a2a35;
+  --color-ivory: #f5f0e8;
+  --color-encoding: #9dceff;
+}
+
+:root {
+  font-family: var(--font-sans);
+  color: var(--color-ivory);
+  background: var(--color-ink);
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 20% 20%, #1a2238 0%, var(--color-ink) 45%, #080b14 100%);
+}
+
+.bg-gradient-ink {
+  background: linear-gradient(160deg, var(--color-ink) 0%, var(--color-slate) 60%, #101628 100%);
+}
+
+.shadow-glow {
+  box-shadow: 0 0 28px rgba(255, 179, 71, 0.42);
+}
+
+button,
+a,
+input {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+}
