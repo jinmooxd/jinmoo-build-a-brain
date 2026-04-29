@@ -16,6 +16,11 @@ function App() {
   const [trackEverything, setTrackEverything] = useState(false)
   const activeSection = useScrollSection(sectionIds)
   const sectionScrollLock = useRef(false)
+  const activeSectionRef = useRef(activeSection)
+
+  useEffect(() => {
+    activeSectionRef.current = activeSection
+  }, [activeSection])
 
   useEffect(() => {
     const isInteractiveElement = (target: EventTarget | null) => {
@@ -30,27 +35,10 @@ function App() {
       )
     }
 
-    const findNearestSectionIndex = () => {
-      let closest = 0
-      let closestDistance = Number.POSITIVE_INFINITY
-
-      sectionIds.forEach((id, index) => {
-        const element = document.getElementById(id)
-        if (!element) return
-        const distance = Math.abs(element.getBoundingClientRect().top)
-        if (distance < closestDistance) {
-          closestDistance = distance
-          closest = index
-        }
-      })
-
-      return closest
-    }
-
     const onWheel = (event: WheelEvent) => {
       if (sectionScrollLock.current || Math.abs(event.deltaY) < 20 || isInteractiveElement(event.target)) return
 
-      const currentIndex = findNearestSectionIndex()
+      const currentIndex = activeSectionRef.current
       const direction = event.deltaY > 0 ? 1 : -1
       const nextIndex = Math.max(0, Math.min(sectionIds.length - 1, currentIndex + direction))
       if (nextIndex === currentIndex) return
