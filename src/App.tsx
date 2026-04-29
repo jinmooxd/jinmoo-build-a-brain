@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AttentionSpotlight } from './components/AttentionSpotlight'
 import { BottleneckMeter } from './components/BottleneckMeter'
 import { InattentionGame } from './components/InattentionGame'
@@ -15,6 +15,60 @@ const sectionIds = ['sensory', 'bottleneck', 'inattention', 'spotlight', 'encodi
 function App() {
   const [trackEverything, setTrackEverything] = useState(false)
   const activeSection = useScrollSection(sectionIds)
+  const sectionScrollLock = useRef(false)
+
+  useEffect(() => {
+    const isInteractiveElement = (target: EventTarget | null) => {
+      if (!(target instanceof HTMLElement)) return false
+      const tag = target.tagName.toLowerCase()
+      return (
+        tag === 'input' ||
+        tag === 'textarea' ||
+        tag === 'select' ||
+        tag === 'button' ||
+        target.isContentEditable
+      )
+    }
+
+    const findNearestSectionIndex = () => {
+      let closest = 0
+      let closestDistance = Number.POSITIVE_INFINITY
+
+      sectionIds.forEach((id, index) => {
+        const element = document.getElementById(id)
+        if (!element) return
+        const distance = Math.abs(element.getBoundingClientRect().top)
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closest = index
+        }
+      })
+
+      return closest
+    }
+
+    const onWheel = (event: WheelEvent) => {
+      if (sectionScrollLock.current || Math.abs(event.deltaY) < 20 || isInteractiveElement(event.target)) return
+
+      const currentIndex = findNearestSectionIndex()
+      const direction = event.deltaY > 0 ? 1 : -1
+      const nextIndex = Math.max(0, Math.min(sectionIds.length - 1, currentIndex + direction))
+      if (nextIndex === currentIndex) return
+
+      const nextSection = document.getElementById(sectionIds[nextIndex])
+      if (!nextSection) return
+
+      event.preventDefault()
+      sectionScrollLock.current = true
+      nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      window.setTimeout(() => {
+        sectionScrollLock.current = false
+      }, 700)
+    }
+
+    window.addEventListener('wheel', onWheel, { passive: false })
+    return () => window.removeEventListener('wheel', onWheel)
+  }, [])
 
   return (
     <div className="bg-gradient-ink text-ivory">
